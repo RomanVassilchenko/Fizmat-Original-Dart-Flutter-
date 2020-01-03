@@ -14,13 +14,14 @@ description: Fizmat Original Crossplatform app
 version: 1.5.1+56
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   http: ^0.12.0+2
   flutter_launcher_icons: ^0.7.4
+  url_launcher: ^5.2.5
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
