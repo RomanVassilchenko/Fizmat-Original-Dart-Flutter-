@@ -7,12 +7,14 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 String API_KEY = "AKfycbzkpgPRlnZ18dMC8WlxSeSrlwNIwAo0nwAEr29XYbJHvbQFNMY";
+http.Response responseArticle;
 
 Future<List<Article>> fetchArticleBySource() async {
-  final response =
-      await http.get('https://script.google.com/macros/s/${API_KEY}/exec');
-  if (response.statusCode == 200) {
-    List articles = json.decode(response.body)['articles'];
+  if (responseArticle == null)
+    responseArticle =
+    await http.get('https://script.google.com/macros/s/${API_KEY}/exec');
+  if (responseArticle.statusCode == 200) {
+    List articles = json.decode(responseArticle.body)['articles'];
     return articles.map((article) => new Article.fromJson(article)).toList();
   } else {
     throw Exception("Failed to load article list");
@@ -127,7 +129,7 @@ class ArticleScreenState extends State<ArticleScreen> {
                                                     left: 8.0),
                                                 child: Text(
                                                   '${article.description}',
-                                                  maxLines: 3,
+                                                  maxLines: 2,
                                                   style: TextStyle(
                                                       fontSize: 12.0,
                                                       color: Color.fromRGBO(

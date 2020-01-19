@@ -68,11 +68,16 @@ class Source {
   final String id;
   final String name;
   final String url;
+  final String flag;
 
-  Source({this.id, this.name, this.url});
+  Source({this.id, this.name, this.url, this.flag});
 
   factory Source.fromJson(Map<String, dynamic> json) {
-    return Source(id: json['id'], name: json['name'], url: json['url']);
+    return Source(
+        id: json['id'],
+        name: json['name'],
+        url: json['url'],
+        flag: json['flag']);
   }
 
   factory Source.fromJsonForArticle(Map<String, dynamic> json) {

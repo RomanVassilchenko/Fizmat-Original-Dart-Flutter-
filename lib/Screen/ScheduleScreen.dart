@@ -10,6 +10,10 @@ String API_KEY = "AKfycbxBsLHkxCKFYMgKPtNVXho_rNF4mWdX1vBSPLMpi-8EAB8VaqdO";
 http.Response responseSchedule;
 http.Response responseClass;
 
+List<String> classes = ["1A"],
+    week = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+var _selectedIndex = 0;
+
 Future<List<Schedule>> fetchScheduleBySource() async {
   if (responseSchedule == null) {
     responseSchedule =
@@ -25,38 +29,62 @@ Future<List<Schedule>> fetchScheduleBySource() async {
   }
 }
 
-void fetchScheduleClass() async {
+Future<Null> fetchScheduleClass() async {
   if (responseClass == null) {
     responseClass = await http.get(
         'https://script.google.com/macros/s/AKfycbz7ofb88NYRa-hcsyJNkOof_r5vO3qpwBSPdgeLIqXtAAK41Dw/exec');
   }
   if (responseClass.statusCode == 200) {
     classes = responseClass.body.split(" ");
-    return;
   } else {
-    throw Exception("Failed to load schedule list");
+    throw Exception("Failed to load class list");
   }
 }
-
-List<String> classes = const <String>['10X'];
-
-int _selectedIndex = 0;
 
 class ScheduleScreen extends StatefulWidget {
   final String url;
 
-  ScheduleScreen({Key key, @required this.url});
+  ScheduleScreen({Key key, @required this.url}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => ScheduleScreenState(url: url);
+  State<StatefulWidget> createState() => ScheduleScreenState();
 }
 
 class ScheduleScreenState extends State<ScheduleScreen> {
-  final String url;
+  var list_schedule;
+  var dayOfWeek = 1;
+  var refreshKey = GlobalKey<RefreshIndicatorState>();
 
-  ScheduleScreenState({Key key, @required this.url});
+  @override
+  void initState() {
+    fetchScheduleClass();
+    refreshListSchedule();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   void selectIndexState(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  Future<Null> refreshListSchedule() async {
+    refreshKey.currentState?.show(atTop: false);
+    API_KEY = widget.url;
+    print(dayOfWeek);
+
+    setState(() {
+      list_schedule = fetchScheduleBySource();
+    });
+    return null;
+  }
+
+  void _selectIndexState(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -65,154 +93,101 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primaryColor: Colors.red,
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-      ),
-      home: DefaultTabController(
-        length: 6,
-        child: Scaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context, false),
-            ),
-            bottom: TabBar(
-              tabs: [
-                Text("ПН", style: TextStyle(fontSize: 14)),
-                Text("ВТ", style: TextStyle(fontSize: 14)),
-                Text("СР", style: TextStyle(fontSize: 14)),
-                Text("ЧТ", style: TextStyle(fontSize: 14)),
-                Text("ПТ", style: TextStyle(fontSize: 14)),
-                Text("СБ", style: TextStyle(fontSize: 14)),
-              ],
-            ),
-            title: Row(
-              children: <Widget>[
-                CupertinoButton(
-                    child: Text(
-                      "Выбрать : ${classes[_selectedIndex]}",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    onPressed: () {
-                      showModalBottomSheet(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return Container(
-                              height: 200.0,
-                              child: CupertinoPicker(
-                                  itemExtent: 32.0,
-                                  onSelectedItemChanged: (int index) {
-                                    selectIndexState(index);
-                                  },
-                                  children: new List<Widget>.generate(
-                                      classes.length, (int index) {
-                                    return new Center(
-                                      child: new Text(classes[index]),
-                                    );
-                                  })),
-                            );
-                          });
-                    }),
-              ],
-            ),
-          ),
-          body: TabBarView(
-            children: [
-              ScheduleScreenPage(url: url, dayOfWeek: 1),
-              ScheduleScreenPage(url: url, dayOfWeek: 2),
-              ScheduleScreenPage(url: url, dayOfWeek: 3),
-              ScheduleScreenPage(url: url, dayOfWeek: 4),
-              ScheduleScreenPage(url: url, dayOfWeek: 5),
-              ScheduleScreenPage(url: url, dayOfWeek: 6),
-            ],
-          ),
+        theme: ThemeData(
+          brightness: Brightness.light,
+          primaryColor: Colors.red,
         ),
-      ),
-    );
-  }
-}
-
-class ScheduleScreenPage extends StatefulWidget {
-  final String url;
-  final int dayOfWeek;
-
-  ScheduleScreenPage({Key key, @required this.url, this.dayOfWeek})
-      : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => ScheduleScreenPageState();
-}
-
-class ScheduleScreenPageState extends State<ScheduleScreenPage> {
-  var list_schedule;
-  var refreshKey = GlobalKey<RefreshIndicatorState>();
-
-  @override
-  void initState() {
-    refreshListSchedule();
-    fetchScheduleClass();
-  }
-
-  Future<Null> refreshListSchedule() async {
-    refreshKey.currentState?.show(atTop: false);
-    API_KEY = widget.url;
-    print(widget.dayOfWeek);
-
-    setState(() {
-      list_schedule = fetchScheduleBySource();
-    });
-    return null;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: RefreshIndicator(
-            key: refreshKey,
-            child: FutureBuilder<List<Schedule>>(
-              future: list_schedule,
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                } else if (snapshot.hasData) {
-                  List<Schedule> schedules = snapshot.data;
-                  List<Schedule> updatedSchedules;
-                  schedules.removeWhere((item) =>
-                      item.dayOfWeek.toString() != widget.dayOfWeek.toString());
-                  updatedSchedules =
-                      schedules.map((element) => element).toList();
-                  updatedSchedules.removeWhere((item) =>
-                      item.class_number.toString() !=
-                      classes[_selectedIndex].toString());
-                  updatedSchedules.removeWhere(
-                      (item) => item.subject_title.toString() == "");
-                  updatedSchedules
-                      .removeWhere((item) => item.time.toString().length > 11);
-                  updatedSchedules.removeWhere((item) =>
-                      item.time.toString() == "" ||
-                      item.time.toString() == null);
-                  return (updatedSchedules.isEmpty)
-                      ? Text(
-                          "Свободный день",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 28,
-                            color: Colors.white,
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+        ),
+        home: Scaffold(
+            appBar: AppBar(
+                title: Center(
+                  child: Row(
+                    children: <Widget>[
+                      CupertinoButton(
+                          child: Text(
+                            "Выбрать : ${classes[_selectedIndex]}",
+                            style: TextStyle(color: Colors.white),
                           ),
-                        )
-                      : ListView(
-                          children: updatedSchedules
-                              .map((schedule) => GestureDetector(
-                                    onTap: () {
-                                      //TODO Think what can we add here
-                                    },
-                                    child: Card(
+                          onPressed: () {
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Container(
+                                    height: 200.0,
+                                    child: CupertinoPicker(
+                                        itemExtent: 32.0,
+                                        onSelectedItemChanged: (int index) {
+                                          _selectIndexState(index);
+                                        },
+                                        children: new List<Widget>.generate(
+                                            classes.length, (int index) {
+                                          return new Center(
+                                            child: new Text(classes[index]),
+                                          );
+                                        })),
+                                  );
+                                });
+                          }),
+                    ],
+                  ),
+                ),
+                automaticallyImplyLeading: true,
+                leading: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.pop(context, false),
+                )),
+            body: _scheduleBody()));
+  }
+
+  _scheduleBody() {
+    return Column(
+      children: <Widget>[
+        Flexible(
+          flex: 9,
+          child: Center(
+            child: RefreshIndicator(
+                key: refreshKey,
+                child: FutureBuilder<List<Schedule>>(
+                  future: list_schedule,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    } else if (snapshot.hasData) {
+                      List<Schedule> schedules = snapshot.data;
+                      List<Schedule> updatedSchedules;
+                      schedules.removeWhere((item) =>
+                      item.dayOfWeek.toString() != dayOfWeek.toString());
+                      updatedSchedules =
+                          schedules.map((element) => element).toList();
+                      updatedSchedules.removeWhere((item) =>
+                      item.class_number.toString() !=
+                          classes[_selectedIndex].toString());
+                      updatedSchedules.removeWhere(
+                              (item) => item.subject_title.toString() == "");
+                      updatedSchedules.removeWhere(
+                              (item) =>
+                          item.time
+                              .toString()
+                              .length > 11);
+                      updatedSchedules.removeWhere((item) =>
+                      item.time.toString() == "" ||
+                          item.time.toString() == null);
+                      return (updatedSchedules.isEmpty)
+                          ? Text(
+                        (dayOfWeek == 6) ? "Свободный день" : "",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 28,
+                          color: Colors.white,
+                        ),
+                      )
+                          : ListView(
+                        children: updatedSchedules
+                            .map(
+                              (schedule) =>
+                              Card(
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(0.0)),
@@ -284,15 +259,54 @@ class ScheduleScreenPageState extends State<ScheduleScreenPage> {
                                         ],
                                       ),
                                     ),
-                                  ))
-                              .toList(),
-                        );
-                }
-                return CircularProgressIndicator();
-              },
-            ),
-            onRefresh: refreshListSchedule),
-      ),
+                        )
+                            .toList(),
+                      );
+                    }
+                    return CircularProgressIndicator();
+                  },
+                ),
+                onRefresh: refreshListSchedule),
+          ),
+        ),
+        Flexible(
+            flex: 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: new RaisedButton(
+                    padding: const EdgeInsets.all(8.0),
+                    textColor: Colors.white,
+                    color: Colors.blue,
+                    onPressed: () {
+                      dayOfWeek--;
+                      if (dayOfWeek == 0) dayOfWeek = 6;
+                      refreshListSchedule();
+                    },
+                    child:
+                    new Text(week[(dayOfWeek > 1) ? (dayOfWeek - 2) : (5)]),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: new RaisedButton(
+                    onPressed: () {
+                      dayOfWeek++;
+                      if (dayOfWeek == 7) dayOfWeek = 1;
+                      refreshListSchedule();
+                    },
+                    textColor: Colors.white,
+                    color: Colors.red,
+                    padding: const EdgeInsets.all(8.0),
+                    child: new Text(week[(dayOfWeek < 6) ? (dayOfWeek) : 0]),
+                  ),
+                ),
+              ],
+            ))
+      ],
     );
   }
 
