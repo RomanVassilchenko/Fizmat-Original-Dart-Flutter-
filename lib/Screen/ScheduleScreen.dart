@@ -3,42 +3,25 @@ import 'dart:convert';
 import 'package:fizmatoriginal/Model/model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-String API_KEY = "AKfycbxBsLHkxCKFYMgKPtNVXho_rNF4mWdX1vBSPLMpi-8EAB8VaqdO";
-http.Response responseSchedule;
-http.Response responseClass;
+String apiKey = "AKfycbxBsLHkxCKFYMgKPtNVXho_rNF4mWdX1vBSPLMpi-8EAB8VaqdO";
 
 List<String> classes = ["1A"],
     week = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
 var _selectedIndex = 0;
 
 Future<List<Schedule>> fetchScheduleBySource() async {
-  if (responseSchedule == null) {
-    responseSchedule =
-        await http.get('https://script.google.com/macros/s/${API_KEY}/exec');
-  }
-  if (responseSchedule.statusCode == 200) {
-    List schedules = json.decode(responseSchedule.body)['schedules'];
-    return schedules
-        .map((schedule) => new Schedule.fromJson(schedule))
-        .toList();
-  } else {
-    throw Exception("Failed to load schedule list");
-  }
+  var fetchedFile = await DefaultCacheManager()
+      .getSingleFile('https://script.google.com/macros/s/$apiKey/exec');
+  List schedules = json.decode(fetchedFile.readAsStringSync())['schedules'];
+  return schedules.map((schedule) => new Schedule.fromJson(schedule)).toList();
 }
 
 Future<Null> fetchScheduleClass() async {
-  if (responseClass == null) {
-    responseClass = await http.get(
-        'https://script.google.com/macros/s/AKfycbz7ofb88NYRa-hcsyJNkOof_r5vO3qpwBSPdgeLIqXtAAK41Dw/exec');
-  }
-  if (responseClass.statusCode == 200) {
-    classes = responseClass.body.split(" ");
-  } else {
-    throw Exception("Failed to load class list");
-  }
+  var fetchedFile = await DefaultCacheManager().getSingleFile(
+      'https://script.google.com/macros/s/AKfycbz7ofb88NYRa-hcsyJNkOof_r5vO3qpwBSPdgeLIqXtAAK41Dw/exec');
+  classes = fetchedFile.readAsStringSync().split(" ");
 }
 
 class ScheduleScreen extends StatefulWidget {
@@ -51,7 +34,7 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class ScheduleScreenState extends State<ScheduleScreen> {
-  var list_schedule;
+  var listSchedule;
   var dayOfWeek = 1;
   var refreshKey = GlobalKey<RefreshIndicatorState>();
 
@@ -75,11 +58,11 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 
   Future<Null> refreshListSchedule() async {
     refreshKey.currentState?.show(atTop: false);
-    API_KEY = widget.url;
+    apiKey = widget.url;
     print(dayOfWeek);
 
     setState(() {
-      list_schedule = fetchScheduleBySource();
+      listSchedule = fetchScheduleBySource();
     });
     return null;
   }
@@ -115,7 +98,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return Container(
-                                    height: 200.0,
+                                    height: 225.0,
                                     child: CupertinoPicker(
                                         itemExtent: 32.0,
                                         onSelectedItemChanged: (int index) {
@@ -150,7 +133,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             child: RefreshIndicator(
                 key: refreshKey,
                 child: FutureBuilder<List<Schedule>>(
-                  future: list_schedule,
+                  future: listSchedule,
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return Text('${snapshot.error}');
@@ -162,10 +145,10 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                       updatedSchedules =
                           schedules.map((element) => element).toList();
                       updatedSchedules.removeWhere((item) =>
-                      item.class_number.toString() !=
+                      item.classNumber.toString() !=
                           classes[_selectedIndex].toString());
                       updatedSchedules.removeWhere(
-                              (item) => item.subject_title.toString() == "");
+                              (item) => item.subjectTitle.toString() == "");
                       updatedSchedules.removeWhere(
                               (item) =>
                           item.time
@@ -245,7 +228,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                                       top: 25.0,
                                                       bottom: 25.0),
                                                   child: Text(
-                                                      "${schedule.subject_title}",
+                                                      "${schedule
+                                                          .subjectTitle}",
                                                       textAlign:
                                                           TextAlign.center,
                                                       style: TextStyle(
@@ -277,44 +261,43 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               children: <Widget>[
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: new RaisedButton(
+                  child: new FlatButton(
                     padding: const EdgeInsets.all(8.0),
                     textColor: Colors.white,
-                    color: Colors.blue,
                     onPressed: () {
                       dayOfWeek--;
                       if (dayOfWeek == 0) dayOfWeek = 6;
                       refreshListSchedule();
                     },
-                    child:
-                    new Text(week[(dayOfWeek > 1) ? (dayOfWeek - 2) : (5)]),
+                    child: new Text(
+                      "<",
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ),
+                ),
+                new Text(
+                  week[dayOfWeek - 1],
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                 ),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: new RaisedButton(
+                  child: new FlatButton(
                     onPressed: () {
                       dayOfWeek++;
                       if (dayOfWeek == 7) dayOfWeek = 1;
                       refreshListSchedule();
                     },
                     textColor: Colors.white,
-                    color: Colors.red,
                     padding: const EdgeInsets.all(8.0),
-                    child: new Text(week[(dayOfWeek < 6) ? (dayOfWeek) : 0]),
+                    child: new Text(
+                      ">",
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ),
                 ),
               ],
-            ))
+            )) // TODO Remove of fix this
       ],
     );
-  }
-
-  _launchUrl(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw ('Couldn\'t launch ${url} ');
-    }
   }
 }

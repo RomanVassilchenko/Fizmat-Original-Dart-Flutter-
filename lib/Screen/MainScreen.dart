@@ -3,20 +3,19 @@ import 'dart:convert';
 import 'package:fizmatoriginal/Model/model.dart';
 import 'package:fizmatoriginal/Screen/ArticleScreen.dart';
 import 'package:fizmatoriginal/Screen/ScheduleScreen.dart';
+import 'package:fizmatoriginal/Screen/SettingsScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Future<List<Source>> fetchNewsSource() async {
-  final response = await http.get(
+  var fetchedFile = await DefaultCacheManager().getSingleFile(
       'https://script.google.com/macros/s/AKfycbwuDdll6PANdIwEXqoTilUW1N3w4DFx70CPEBgIe4EF1hUFUIwN/exec');
-  if (response.statusCode == 200) {
-    List sources = json.decode(response.body)['sources'];
-    return sources.map((source) => new Source.fromJson(source)).toList();
-  } else {
-    throw Exception("Failed to load source list");
-  }
+  List sources = json.decode(fetchedFile.readAsStringSync())['sources'];
+  return sources.map((source) => new Source.fromJson(source)).toList();
 }
+
+void clearCache() async {}
 
 class MainScreen extends StatefulWidget {
   @override
@@ -24,7 +23,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen> {
-  var list_sources;
+  var listSources;
   var refreshKey = GlobalKey<RefreshIndicatorState>();
 
   @override
@@ -55,7 +54,7 @@ class MainScreenState extends State<MainScreen> {
           body: Center(
             child: RefreshIndicator(
               child: FutureBuilder<List<Source>>(
-                future: list_sources,
+                future: listSources,
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Text('Error:${snapshot.error}');
@@ -123,7 +122,10 @@ class MainScreenState extends State<MainScreen> {
                                     break;
                                   case "settings":
                                     {
-                                      _showToast(context);
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  SettingsScreen()));
                                     }
                                     break;
                                   default:
@@ -188,17 +190,9 @@ class MainScreenState extends State<MainScreen> {
     refreshKey.currentState?.show(atTop: false);
 
     setState(() {
-      list_sources = fetchNewsSource();
+      listSources = fetchNewsSource();
     });
     return null;
-  }
-
-  _launchUrl(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw ('Couldn\'t launch ${url} ');
-    }
   }
 
   void _showToast(BuildContext context) {
@@ -211,189 +205,12 @@ class MainScreenState extends State<MainScreen> {
       ),
     );
   }
-}
 
-//import 'package:fizmatoriginal/Screen/ArticleScreen.dart';
-//import 'package:fizmatoriginal/Screen/ScheduleScreen.dart';
-//import 'package:flutter/material.dart';
-//import 'package:url_launcher/url_launcher.dart';
-//
-//class MainScreen extends StatefulWidget {
-//  @override
-//  State<StatefulWidget> createState() => MainScreenState();
-//}
-//
-//class MainScreenState extends State<MainScreen> {
-//  @override
-//  void initState() {
-//    super.initState();
-//  }
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return MaterialApp(
-//        title: "Главная",
-//        theme: ThemeData(
-//          brightness: Brightness.light,
-//          primaryColor: Colors.red,
-//        ),
-//        darkTheme: ThemeData(
-//          brightness: Brightness.dark,
-//        ),
-//        home: Scaffold(
-//            body: Center(
-//          child: Wrap(
-//            alignment: WrapAlignment.spaceAround,
-//            crossAxisAlignment: WrapCrossAlignment.center,
-//            direction: Axis.vertical,
-//            children: <Widget>[
-//              Column(
-//                mainAxisAlignment: MainAxisAlignment.center,
-//                children: <Widget>[
-//                  Builder(
-//                    builder: (context) => Center(
-//                      child: ClipOval(
-//                        child: Material(
-//                          color: Colors.blue, // button color
-//                          child: InkWell(
-//                            splashColor: Colors.red, // inkwell color
-//                            child: SizedBox(
-//                                width: 72,
-//                                height: 72,
-//                                child: Image.network(
-//                                  "https://firebasestorage.googleapis.com/v0/b/fizmat-original.appspot.com/o/news.png?alt=media&token=ed6fec71-0246-43ef-8275-d9c334d8f8f4",
-//                                  scale: 1.5,
-//                                )),
-//                            onTap: () {
-//                              Navigator.of(context).push(MaterialPageRoute(
-//                                  builder: (context) => ArticleScreen(
-//                                      url:
-//                                          "AKfycbzkpgPRlnZ18dMC8WlxSeSrlwNIwAo0nwAEr29XYbJHvbQFNMY",
-//                                      title: "Новости")));
-//                            },
-//                          ),
-//                        ),
-//                      ),
-//                    ),
-//                  ),
-//                  Padding(
-//                    padding: const EdgeInsets.all(10.0),
-//                    child: Text("Новости"),
-//                  ),
-//                ],
-//              ),
-//              Column(
-//                mainAxisAlignment: MainAxisAlignment.center,
-//                children: <Widget>[
-//                  Builder(
-//                    builder: (context) => Center(
-//                      child: ClipOval(
-//                        child: Material(
-//                          color: Colors.blue, // button color
-//                          child: InkWell(
-//                              splashColor: Colors.red, // inkwell color
-//                              child: SizedBox(
-//                                  width: 72,
-//                                  height: 72,
-//                                  child: Image.network(
-//                                    "https://firebasestorage.googleapis.com/v0/b/fizmat-original.appspot.com/o/schedule.png?alt=media&token=affc44f1-2f6b-4a2e-a584-aad906bd6481",
-//                                    scale: 1.5,
-//                                  )),
-//                              onTap: () {
-//                                Navigator.of(context).push(MaterialPageRoute(
-//                                    builder: (context) => ScheduleScreen(
-//                                        url:
-//                                            "AKfycbxBsLHkxCKFYMgKPtNVXho_rNF4mWdX1vBSPLMpi-8EAB8VaqdO")));
-//                              }),
-//                        ),
-//                      ),
-//                    ),
-//                  ),
-//                  Padding(
-//                    padding: const EdgeInsets.all(10.0),
-//                    child: Text("Расписание"),
-//                  ),
-//                ],
-//              ),
-//              Column(
-//                mainAxisAlignment: MainAxisAlignment.center,
-//                children: <Widget>[
-//                  Builder(
-//                    builder: (context) => Center(
-//                      child: ClipOval(
-//                        child: Material(
-//                          color: Colors.blue, // button color
-//                          child: InkWell(
-//                            splashColor: Colors.red, // inkwell color
-//                            child: SizedBox(
-//                                width: 72,
-//                                height: 72,
-//                                child: Image.network(
-//                                  "https://firebasestorage.googleapis.com/v0/b/fizmat-original.appspot.com/o/noted.png?alt=media&token=64d7b3b4-3fa8-4987-a936-34fefc28cce0",
-//                                  scale: 1.5,
-//                                )),
-//                            onTap: () {},
-//                          ),
-//                        ),
-//                      ),
-//                    ),
-//                  ),
-//                  Padding(
-//                    padding: const EdgeInsets.all(10.0),
-//                    child: Text("Статьи"),
-//                  ),
-//                ],
-//              ),
-//              Column(
-//                mainAxisAlignment: MainAxisAlignment.center,
-//                children: <Widget>[
-//                  Builder(
-//                    builder: (context) => Center(
-//                      child: ClipOval(
-//                        child: Material(
-//                          color: Colors.blue, // button color
-//                          child: InkWell(
-//                            splashColor: Colors.red, // inkwell color
-//                            child: SizedBox(
-//                                width: 72,
-//                                height: 72,
-//                                child: Image.network(
-//                                  "https://firebasestorage.googleapis.com/v0/b/fizmat-original.appspot.com/o/settings.png?alt=media&token=283000ba-0a7f-49dc-b9a0-0ae4844494e0",
-//                                  scale: 1.5,
-//                                )),
-//                            onTap: () {},
-//                          ),
-//                        ),
-//                      ),
-//                    ),
-//                  ),
-//                  Padding(
-//                    padding: const EdgeInsets.all(10.0),
-//                    child: Text("Настройки"),
-//                  ),
-//                ],
-//              ),
-//            ],
-//          ),
-//        )));
-//  }
-//
-//  _launchUrl(String url) async {
-//    if (await canLaunch(url)) {
-//      await launch(url, forceWebView: true);
-//    } else {
-//      throw ('Couldn\'t launch ${url} ');
-//    }
-//  }
-//
-//  void _showToast(BuildContext context) {
-//    final scaffold = Scaffold.of(context);
-//    scaffold.showSnackBar(
-//      SnackBar(
-//        content: const Text('Находится в разработке'),
-//        action: SnackBarAction(
-//            label: 'Ok', onPressed: scaffold.hideCurrentSnackBar),
-//      ),
-//    );
-//  }
-//}
+  _launchUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url, forceWebView: true);
+    } else {
+      throw ('Couldn\'t launch $url ');
+    }
+  }
+}

@@ -6,15 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
-String API_KEY = "AKfycbzkpgPRlnZ18dMC8WlxSeSrlwNIwAo0nwAEr29XYbJHvbQFNMY";
-http.Response responseArticle;
+String apiKey = "AKfycbzkpgPRlnZ18dMC8WlxSeSrlwNIwAo0nwAEr29XYbJHvbQFNMY";
+
+http.Response response;
 
 Future<List<Article>> fetchArticleBySource() async {
-  if (responseArticle == null)
-    responseArticle =
-    await http.get('https://script.google.com/macros/s/${API_KEY}/exec');
-  if (responseArticle.statusCode == 200) {
-    List articles = json.decode(responseArticle.body)['articles'];
+  if (response == null)
+    response =
+    await http.get('https://script.google.com/macros/s/$apiKey/exec');
+  if (response.statusCode == 200) {
+    List articles = json.decode(response.body)['articles'];
     return articles.map((article) => new Article.fromJson(article)).toList();
   } else {
     throw Exception("Failed to load article list");
@@ -31,20 +32,21 @@ class ArticleScreen extends StatefulWidget {
 }
 
 class ArticleScreenState extends State<ArticleScreen> {
-  var list_article;
+  var listArticle;
   var refreshKey = GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
+    super.initState();
     refreshListArticle();
   }
 
   Future<Null> refreshListArticle() async {
     refreshKey.currentState?.show(atTop: false);
-    API_KEY = widget.url;
+    apiKey = widget.url;
 
     setState(() {
-      list_article = fetchArticleBySource();
+      listArticle = fetchArticleBySource();
     });
     return null;
   }
@@ -73,7 +75,7 @@ class ArticleScreenState extends State<ArticleScreen> {
             child: RefreshIndicator(
                 key: refreshKey,
                 child: FutureBuilder<List<Article>>(
-                  future: list_article,
+                  future: listArticle,
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return Text('${snapshot.error}');
@@ -194,7 +196,7 @@ class ArticleScreenState extends State<ArticleScreen> {
     if (await canLaunch(url)) {
       await launch(url, forceWebView: true);
     } else {
-      throw ('Couldn\'t launch ${url} ');
+      throw ('Couldn\'t launch $url ');
     }
   }
 }

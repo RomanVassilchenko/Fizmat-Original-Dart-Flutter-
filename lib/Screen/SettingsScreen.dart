@@ -13,13 +13,6 @@ class SettingsScreenState extends State<SettingsScreen> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  bool townSwitcher = true;
-
-  @override
   Widget build(BuildContext context) {
     return MaterialApp(
         theme: ThemeData(

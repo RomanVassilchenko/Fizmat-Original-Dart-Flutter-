@@ -34,9 +34,9 @@ class Article {
 class Schedule {
   final Source source;
   final String author;
-  final String subject_title;
-  final String class_number;
-  final String index_number;
+  final String subjectTitle;
+  final String classNumber;
+  final String indexNumber;
   final String classroom;
   final String dayOfWeek;
   final String time;
@@ -44,9 +44,9 @@ class Schedule {
   Schedule(
       {this.source,
       this.author,
-      this.subject_title,
-      this.class_number,
-      this.index_number,
+        this.subjectTitle,
+        this.classNumber,
+        this.indexNumber,
       this.classroom,
       this.dayOfWeek,
       this.time});
@@ -55,9 +55,9 @@ class Schedule {
     return Schedule(
         source: Source.fromJsonForArticle(json["source"]),
         author: json['author'],
-        subject_title: json['subject_title'],
-        class_number: json['class_number'],
-        index_number: json['index_number'],
+        subjectTitle: json['subject_title'],
+        classNumber: json['class_number'],
+        indexNumber: json['index_number'],
         classroom: json['classroom'],
         dayOfWeek: json['dayOfWeek'],
         time: json['time']);
