@@ -35,10 +35,10 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: "Новости",
         theme: ThemeData(
-          brightness: Brightness.light,
-          primaryColor: Colors.red,
+          brightness: Brightness.dark,
         ),
         darkTheme: ThemeData(
           brightness: Brightness.dark,

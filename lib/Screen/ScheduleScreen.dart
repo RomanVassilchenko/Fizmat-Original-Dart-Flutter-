@@ -76,9 +76,9 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          brightness: Brightness.light,
-          primaryColor: Colors.red,
+          brightness: Brightness.dark,
         ),
         darkTheme: ThemeData(
           brightness: Brightness.dark,
