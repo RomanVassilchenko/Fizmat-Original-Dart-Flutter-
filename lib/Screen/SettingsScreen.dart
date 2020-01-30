@@ -68,16 +68,16 @@ class SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Transform.scale(
-                          scale: 1.5,
-                          child: Switch(
-                            onChanged: toggleSwitch,
-                            value: townSwitcher,
-                            activeColor: Colors.blue,
-                            activeTrackColor: Colors.green,
-                            inactiveThumbColor: Colors.white,
-                            inactiveTrackColor: Colors.grey,
-                          )),
-                    ]))));
+                  Transform.scale(
+                      scale: 1.5,
+                      child: Switch(
+                        onChanged: toggleSwitch,
+                        value: townSwitcher,
+                        activeColor: Colors.blue,
+                        activeTrackColor: Colors.green,
+                        inactiveThumbColor: Colors.white,
+                        inactiveTrackColor: Colors.grey,
+                      )),
+                ]))));
   }
 }
