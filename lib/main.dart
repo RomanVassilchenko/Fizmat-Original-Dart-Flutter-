@@ -1,6 +1,6 @@
 import 'package:fizmatoriginal/Screen/MainScreen.dart';
+import 'package:fizmatoriginal/Screen/NotWorkingScreen.dart';
 import 'package:fizmatoriginal/Screen/ScheduleScreen.dart';
-import 'package:fizmatoriginal/Screen/SettingsScreen.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(new MyApp());
@@ -20,10 +20,11 @@ class MyAppState extends State<MyApp> {
 
   int _selectedTab = 1;
   final _pageOptions = [
-    MainScreen(),
+    NotWorkingScreen(),
     ScheduleScreen(
         url: "AKfycbxBsLHkxCKFYMgKPtNVXho_rNF4mWdX1vBSPLMpi-8EAB8VaqdO"),
-    SettingsScreen(),
+    NotWorkingScreen(),
+    MainScreen(),
   ];
 
   @override
@@ -49,26 +50,57 @@ class MyAppState extends State<MyApp> {
       items: [
         BottomNavigationBarItem(
           icon: Image.asset(
-            "images/library.png",
-            scale: 1.5,
+            "images/marks.png",
+            scale: 14.0,
+            color: Colors.white,
           ),
-          title: Text('Дополнительно'),
+          title: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text('Оценки'),
+          ),
         ),
         BottomNavigationBarItem(
           icon: Image.asset(
             "images/schedule.png",
-            scale: 1.5,
+            scale: 14.0,
+            color: Colors.white,
           ),
-          title: Text('Расписание'),
+          title: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text('Расписание'),
+          ),
         ),
         BottomNavigationBarItem(
           icon: Image.asset(
-            "images/settings.png",
-            scale: 1.5,
+            "images/notes.png",
+            scale: 14.0,
+            color: Colors.white,
           ),
-          title: Text('Настройки'),
+          title: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text('Статьи'),
+          ),
+        ),
+        BottomNavigationBarItem(
+          icon: Image.asset(
+            "images/more.png",
+            scale: 14.0,
+            color: Colors.white,
+          ),
+          title: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text('Дополнительно'),
+          ),
         ),
       ],
     );
   }
 }
+
+/*
+* Image.asset(
+            "images/settings.png",
+            color: Colors.white,
+            scale: 1.5,
+          ),
+* */

@@ -123,7 +123,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             CupertinoButton(
                 child: Text(
                   "Выбрать : ${classList[_scheduleClassIndex]}",
-                  style: TextStyle(color: Colors.white, fontSize: 13),
+                  style: TextStyle(color: Colors.white, fontSize: 15),
                 ),
                 onPressed: () {
                   showModalBottomSheet(
@@ -148,7 +148,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             CupertinoButton(
                 child: Text(
                   "Выбрать : ${week[_dayOfWeek - 1]}",
-                  style: TextStyle(color: Colors.white, fontSize: 13),
+                  style: TextStyle(color: Colors.white, fontSize: 15),
                 ),
                 onPressed: () {
                   showModalBottomSheet(

@@ -145,19 +145,13 @@ class MainScreenState extends State<MainScreen> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Container(
-                                decoration: new BoxDecoration(
-                                  image: new DecorationImage(
-                                    image: new AssetImage(source.url),
-                                  ),
+                              Padding(
+                                padding: const EdgeInsets.all(30.0),
+                                child: Image.asset(
+                                  source.url,
+                                  scale: 10.0,
+                                  color: Colors.white,
                                 ),
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 2.0),
-                                width: 128.0,
-                                height: 115.0,
-                                child: (source.flag == "F")
-                                    ? Image.asset("images/lock.png")
-                                    : null,
                               ),
                               Container(
                                 margin: const EdgeInsets.only(
