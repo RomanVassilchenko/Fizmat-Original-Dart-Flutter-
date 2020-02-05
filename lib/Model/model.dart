@@ -44,9 +44,9 @@ class Schedule {
   Schedule(
       {this.source,
       this.author,
-        this.subjectTitle,
-        this.classNumber,
-        this.indexNumber,
+      this.subjectTitle,
+      this.classNumber,
+      this.indexNumber,
       this.classroom,
       this.dayOfWeek,
       this.time});

@@ -123,7 +123,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             CupertinoButton(
                 child: Text(
                   "Выбрать : ${classList[_scheduleClassIndex]}",
-                  style: TextStyle(color: Colors.white, fontSize: 15),
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 onPressed: () {
                   showModalBottomSheet(
@@ -145,31 +145,24 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                         );
                       });
                 }),
-            CupertinoButton(
-                child: Text(
-                  "Выбрать : ${week[_dayOfWeek - 1]}",
-                  style: TextStyle(color: Colors.white, fontSize: 15),
-                ),
-                onPressed: () {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Container(
-                          height: 225.0,
-                          child: CupertinoPicker(
-                              itemExtent: 32.0,
-                              onSelectedItemChanged: (int index) {
-                                _selectDayState(index);
-                              },
-                              children: new List<Widget>.generate(week.length,
-                                      (int index) {
-                                    return new Center(
-                                      child: new Text(week[index]),
-                                    );
-                                  })),
-                        );
-                      });
-                }),
+            DropdownButton<String>(
+              value: week[_dayOfWeek - 1],
+              onChanged: (String newValue) {
+                setState(() {
+                  int value = week.indexOf(newValue);
+                  _selectDayState(value);
+                });
+              },
+              items: week.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                );
+              }).toList(),
+            ),
           ],
         ),
       ),

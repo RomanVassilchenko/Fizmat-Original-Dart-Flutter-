@@ -51,7 +51,7 @@ class MyAppState extends State<MyApp> {
         BottomNavigationBarItem(
           icon: Image.asset(
             "images/marks.png",
-            scale: 14.0,
+            scale: 17.0,
             color: Colors.white,
           ),
           title: Padding(
@@ -62,7 +62,7 @@ class MyAppState extends State<MyApp> {
         BottomNavigationBarItem(
           icon: Image.asset(
             "images/schedule.png",
-            scale: 14.0,
+            scale: 17.0,
             color: Colors.white,
           ),
           title: Padding(
@@ -73,7 +73,7 @@ class MyAppState extends State<MyApp> {
         BottomNavigationBarItem(
           icon: Image.asset(
             "images/notes.png",
-            scale: 14.0,
+            scale: 17.0,
             color: Colors.white,
           ),
           title: Padding(
@@ -84,7 +84,7 @@ class MyAppState extends State<MyApp> {
         BottomNavigationBarItem(
           icon: Image.asset(
             "images/more.png",
-            scale: 14.0,
+            scale: 17.0,
             color: Colors.white,
           ),
           title: Padding(
