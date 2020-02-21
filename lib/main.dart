@@ -1,5 +1,6 @@
-import 'package:fizmatoriginal/Screen/MainScreen.dart';
-import 'package:fizmatoriginal/Screen/NotWorkingScreen.dart';
+import 'package:fizmatoriginal/Screen/ArticleScreen.dart';
+import 'package:fizmatoriginal/Screen/HelpScreen.dart';
+import 'package:fizmatoriginal/Screen/NotesScreen.dart';
 import 'package:fizmatoriginal/Screen/ScheduleScreen.dart';
 import 'package:flutter/material.dart';
 
@@ -20,11 +21,13 @@ class MyAppState extends State<MyApp> {
 
   int _selectedTab = 1;
   final _pageOptions = [
-    NotWorkingScreen(),
+    ArticleScreen(
+        url: "AKfycbzkpgPRlnZ18dMC8WlxSeSrlwNIwAo0nwAEr29XYbJHvbQFNMY",
+        title: "Новости"),
     ScheduleScreen(
         url: "AKfycbxBsLHkxCKFYMgKPtNVXho_rNF4mWdX1vBSPLMpi-8EAB8VaqdO"),
-    NotWorkingScreen(),
-    MainScreen(),
+    NotesScreen(),
+    HelpScreen(),
   ];
 
   @override
@@ -50,13 +53,13 @@ class MyAppState extends State<MyApp> {
       items: [
         BottomNavigationBarItem(
           icon: Image.asset(
-            "images/marks.png",
+            "images/news.png",
             scale: 17.0,
             color: Colors.white,
           ),
           title: Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text('Оценки'),
+            child: Text('Новости'),
           ),
         ),
         BottomNavigationBarItem(
@@ -83,13 +86,13 @@ class MyAppState extends State<MyApp> {
         ),
         BottomNavigationBarItem(
           icon: Image.asset(
-            "images/more.png",
+            "images/helpdesk.png",
             scale: 17.0,
             color: Colors.white,
           ),
           title: Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text('Дополнительно'),
+            child: Text('Help Desk'),
           ),
         ),
       ],

@@ -55,11 +55,7 @@ class ArticleScreenState extends State<ArticleScreen> {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'EDMT News',
         theme: ThemeData(
-          brightness: Brightness.dark,
-        ),
-        darkTheme: ThemeData(
           brightness: Brightness.dark,
         ),
         home: Scaffold(
@@ -73,10 +69,12 @@ class ArticleScreenState extends State<ArticleScreen> {
     return AppBar(
         title: Text(widget.title),
         automaticallyImplyLeading: true,
-        leading: IconButton(
+        leading: (Navigator.of(context).canPop())
+            ? IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context, false),
-        ));
+        )
+            : null);
   }
 
   _body() {
