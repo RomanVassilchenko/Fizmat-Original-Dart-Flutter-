@@ -1,25 +1,18 @@
 import 'dart:convert';
 
 import 'package:fizmatoriginal/Model/model.dart';
+import 'package:fizmatoriginal/Model/newsCacheManager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 String apiKey = "AKfycbzkpgPRlnZ18dMC8WlxSeSrlwNIwAo0nwAEr29XYbJHvbQFNMY";
 
-http.Response response;
-
 Future<List<Article>> fetchArticleBySource() async {
-  if (response == null)
-    response =
-    await http.get('https://script.google.com/macros/s/$apiKey/exec');
-  if (response.statusCode == 200) {
-    List articles = json.decode(response.body)['articles'];
-    return articles.map((article) => new Article.fromJson(article)).toList();
-  } else {
-    throw Exception("Failed to load article list");
-  }
+  var fetchedFile = await NewsCacheManager()
+      .getSingleFile('https://script.google.com/macros/s/$apiKey/exec');
+  List articles = json.decode(fetchedFile.readAsStringSync())['articles'];
+  return articles.map((article) => new Article.fromJson(article)).toList();
 }
 
 class ArticleScreen extends StatefulWidget {

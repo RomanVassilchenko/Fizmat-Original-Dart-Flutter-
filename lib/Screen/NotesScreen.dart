@@ -2,9 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:fizmatoriginal/Model/model.dart';
+import 'package:fizmatoriginal/Model/newsCacheManager.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+
+List<Items> list;
+var fullName = new Map();
 
 class NotesScreen extends StatefulWidget {
   @override
@@ -12,12 +15,11 @@ class NotesScreen extends StatefulWidget {
 }
 
 class _NotesScreenState extends State<NotesScreen> {
-  var fullName = new Map();
   var token =
       "ece24e823adc1d98437a15ffa589b3762c75f75fc62e42ba8878f0cf023cca9d0ab56a45f88687528e7cc";
 
   Future<List<Items>> getData() async {
-    List<Items> list;
+    if (list != null) return list;
 
     var listOfID = [
       -180159908,
@@ -25,19 +27,19 @@ class _NotesScreenState extends State<NotesScreen> {
     ];
 
     for (int id in listOfID) {
-      fullName[id] = await getFullName(id);
+      if (fullName[id] == null) fullName[id] = await getFullName(id);
       String link =
           "https://api.vk.com/method/wall.get?access_token=$token&v=5.103&owner_id=$id&count=100";
-      var res = await http.get(Uri.encodeFull(link));
 
-      if (res.statusCode == 200) {
-        var data = json.decode(res.body);
-        var rest = data["response"]['items'] as List;
-        if (list == null)
-          list = rest.map<Items>((json) => Items.fromJson(json)).toList();
-        else
-          list += rest.map<Items>((json) => Items.fromJson(json)).toList();
-      }
+      var fetchedFile = await NewsCacheManager().getSingleFile(link);
+
+      var data = json.decode(fetchedFile.readAsStringSync());
+      var rest = data["response"]['items'] as List;
+      if (list == null)
+        list = rest.map<Items>((json) => Items.fromJson(json)).toList();
+      else
+        list += rest.map<Items>((json) => Items.fromJson(json)).toList();
+
       list.removeWhere((item) => item.attachments == null);
       list.removeWhere((item) => item.attachments[0].type != "link");
       list.removeWhere(
@@ -54,19 +56,16 @@ class _NotesScreenState extends State<NotesScreen> {
         ? "https://api.vk.com/method/users.get?access_token=$token&v=5.103&user_ids=$id"
         : "https://api.vk.com/method/groups.getById?access_token=$token&v=5.103&group_ids=${-id}";
 
-    var res = await http.get(Uri.encodeFull(link));
+    var fetchedFile = await NewsCacheManager().getSingleFile(link);
 
-    if (res.statusCode == 200) {
-      var data = json.decode(res.body);
-      if (id >= 0) {
-        return data['response'][0]["first_name"] +
-            " " +
-            data['response'][0]["last_name"];
-      } else {
-        return data['response'][0]["name"];
-      }
-    } else
-      return "";
+    var data = json.decode(fetchedFile.readAsStringSync());
+    if (id >= 0) {
+      return data['response'][0]["first_name"] +
+          " " +
+          data['response'][0]["last_name"];
+    } else {
+      return data['response'][0]["name"];
+    }
   }
 
   Widget listViewWidget(List<Items> note) {

@@ -23,7 +23,7 @@ class MyAppState extends State<MyApp> {
   final _pageOptions = [
     ArticleScreen(
         url: "AKfycbzkpgPRlnZ18dMC8WlxSeSrlwNIwAo0nwAEr29XYbJHvbQFNMY",
-        title: "Новости"),
+        title: "Новости РФМШ Астана"),
     ScheduleScreen(
         url: "AKfycbxBsLHkxCKFYMgKPtNVXho_rNF4mWdX1vBSPLMpi-8EAB8VaqdO"),
     NotesScreen(),
@@ -99,11 +99,3 @@ class MyAppState extends State<MyApp> {
     );
   }
 }
-
-/*
-* Image.asset(
-            "images/settings.png",
-            color: Colors.white,
-            scale: 1.5,
-          ),
-* */
