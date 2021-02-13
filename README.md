@@ -1,16 +1,13 @@
 # fizmatoriginal
 
-A new Flutter application.
+Личный проект, созданный для РФМШ Нур-Султан на платформе flutter
 
-## Getting Started
+## О проекте
 
-This project is a starting point for a Flutter application.
+- [Проект выложен на платформе Google Play Market](https://play.google.com/store/apps/details?id=com.fizmatoriginal&hl=ru&gl=US)
+- У приложения более 150 загрузок
+- Приложение было создано по просьбе учащихся и моего личного желания
 
-A few resources to get you started if this is your first Flutter project:
+На данных момент ###fizmatoriginal### не поддерживается ввиду заочного обучения в республике Казахстан
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+PS (Создавая проект я практически с нуля начал учить верстку на dart и дизайн мобильных приложений и считаю, что первый проект вышел удачный. Надеюсь, что вы его оцените даже с косяками с архитектурой, которой нету)
